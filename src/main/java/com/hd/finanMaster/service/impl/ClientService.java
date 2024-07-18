@@ -11,11 +11,9 @@ import com.hd.finanMaster.repository.IClientRepository;
 import com.hd.finanMaster.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -32,14 +30,14 @@ public class ClientService implements IClientService {
         this.objectMapper = objectMapper;
     }
 
-    private final String MESSAGE ="No se encuentra el cliente ";
+    private final String MESSAGE ="Client not found.";
 
 
     @Override
     public ClientResponseDTO createClient(ClientRequestDTO clientRequestDTO) throws NotClientAgeException {
 
         if (isUnderage(clientRequestDTO.getBirthDate())) {
-            throw new NotClientAgeException("El cliente no puede ser menor de edad");
+            throw new NotClientAgeException("The client cannot be a minor.");
         }
 
          Client client = mapToEntity(clientRequestDTO);

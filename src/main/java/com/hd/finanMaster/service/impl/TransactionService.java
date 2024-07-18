@@ -42,7 +42,7 @@ public class TransactionService implements ITransactionService {
 
         transactionRepository.save(transaction);
 
-        return "Se ha realizado un depósito en su cuenta por un monto de: " + amount;
+        return "A deposit of: " + amount + " has been made to your account.";
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TransactionService implements ITransactionService {
 
         transactionRepository.save(transaction);
 
-        return "Se ha realizado un retiro de su cuenta por un monto de: " + amount;
+        return "A withdrawal of: " + amount + " has been made from your account.";
     }
 
     @Override
@@ -96,6 +96,6 @@ public class TransactionService implements ITransactionService {
 
         transactionRepository.save(transaction);
 
-        return "Se ha realizado una transferencia de: " + amount + " desde la cuenta con ID: " + sourceAccountId + " a la cuenta con ID: " + targetAccountId;
+        return "Transfer of: " + amount + " has been made from account ID: " + sourceAccountId + " to account ID: " + targetAccountId;
     }
 }
