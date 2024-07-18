@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
@@ -27,5 +29,16 @@ public class ClientController {
     @PutMapping()
     public ResponseEntity<ClientResponseDTO> update(@RequestBody ClientRequestUpdateDTO clientRequestUpdateDTO){
         return ResponseEntity.status(HttpStatus.OK).body(clientService.update(clientRequestUpdateDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    private ResponseEntity<Void> deleterById(@PathVariable Long id){
+        clientService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ClientResponseDTO>> getAll(){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.findAll());
     }
 }

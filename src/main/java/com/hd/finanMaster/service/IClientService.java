@@ -5,11 +5,15 @@ import com.hd.finanMaster.dto.ClientRequestUpdateDTO;
 import com.hd.finanMaster.dto.ClientResponseDTO;
 import com.hd.finanMaster.exception.NotClientAgeException;
 
+import java.util.List;
+
 public interface IClientService {
 
     ClientResponseDTO createClient(ClientRequestDTO clientRequestDTO) throws NotClientAgeException;
     ClientResponseDTO findById(Long id);
-    ClientRequestUpdateDTO update(ClientRequestUpdateDTO clientRequestUpdateDTO);
+    ClientResponseDTO update(ClientRequestUpdateDTO clientRequestUpdateDTO);
+    void deleteById(Long id);
+    List<ClientResponseDTO> findAll();
 
 
 

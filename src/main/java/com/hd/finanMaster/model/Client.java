@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 
 @Data
@@ -21,6 +22,7 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String identificationType;
     private String identificationNumber;
     private String firstName;
@@ -33,7 +35,8 @@ public class Client {
     @UpdateTimestamp
     @Column(name = "modification_date")
     private LocalDate modificationDate;
-
+    @OneToMany(mappedBy = "client")
+    private Set<Product> products;
 
 
 }

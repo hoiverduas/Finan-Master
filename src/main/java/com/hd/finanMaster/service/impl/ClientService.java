@@ -9,11 +9,14 @@ import com.hd.finanMaster.exception.NotFoundException;
 import com.hd.finanMaster.model.Client;
 import com.hd.finanMaster.repository.IClientRepository;
 import com.hd.finanMaster.service.IClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class ClientService implements IClientService {
@@ -23,12 +26,14 @@ public class ClientService implements IClientService {
 
     private  final ObjectMapper objectMapper;
 
+    @Autowired
     public ClientService(IClientRepository clientRepository, ObjectMapper objectMapper) {
         this.clientRepository = clientRepository;
         this.objectMapper = objectMapper;
     }
 
     private final String MESSAGE ="No se encuentra el cliente ";
+
 
     @Override
     public ClientResponseDTO createClient(ClientRequestDTO clientRequestDTO) throws NotClientAgeException {
@@ -41,7 +46,7 @@ public class ClientService implements IClientService {
          client.setCreationDate(LocalDate.now());
          clientRepository.save(client);
         return mapToDto(client);
-        
+
     }
 
     @Override
@@ -59,6 +64,19 @@ public class ClientService implements IClientService {
         client.setModificationDate(LocalDate.now());
         clientRepository.save(client);
         return mapToDto(client);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        findById(id);
+        clientRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ClientResponseDTO> findAll() {
+        return clientRepository.findAll().stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
 
