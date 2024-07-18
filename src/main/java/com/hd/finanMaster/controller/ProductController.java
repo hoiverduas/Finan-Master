@@ -34,8 +34,8 @@ public class ProductController {
     }
 
     @PostMapping("/transaction/{productId}")
-    public ResponseEntity<Void> performTransaction(@PathVariable Long productId, @RequestBody TransactionRequestDTO transactionRequestDTO) {
-        productService.performTransaction(productId, transactionRequestDTO.getTransactionAmount());
+    public ResponseEntity<Void> performTransaction(@PathVariable Long productId, @RequestBody TransactionRequestDTO  transactionRequestDTO) {
+        productService.performTransaction(productId, transactionRequestDTO.getAmount());
         return ResponseEntity.ok().build();
     }
 

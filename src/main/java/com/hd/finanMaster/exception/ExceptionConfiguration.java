@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionConfiguration {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ExceptionDTO> handler(NotFoundException e){
+    public ResponseEntity<ExceptionDTO> handleNotFoundException(NotFoundException e) {
         ExceptionDTO exceptionDto = new ExceptionDTO(e.getMessage());
-      return new ResponseEntity<>(exceptionDto, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(exceptionDto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotClientAgeException.class)
@@ -30,6 +30,12 @@ public class ExceptionConfiguration {
 
     @ExceptionHandler(BalanceCannotBeZeroException.class)
     public ResponseEntity<ExceptionDTO> handleBalanceCannotBeZeroException(BalanceCannotBeZeroException e) {
+        ExceptionDTO exceptionDto = new ExceptionDTO(e.getMessage());
+        return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<ExceptionDTO> handleInsufficientFundsException(InsufficientFundsException e) {
         ExceptionDTO exceptionDto = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
     }
