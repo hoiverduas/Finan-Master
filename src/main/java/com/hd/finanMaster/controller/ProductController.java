@@ -17,26 +17,28 @@ public class ProductController {
 
     private final ProductService productService;
 
-
-
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     @PostMapping()
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) throws BalanceCannotBeZeroException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productRequestDTO));
+        // Creates a new product and returns the created product details with a 201 Created status.
+        ProductResponseDTO response = productService.createProduct(productRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> cancelProduct(@PathVariable Long productId) throws  BalanceNotZeroException {
-        productService.cancelProduct(productId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> cancelProduct(@PathVariable Long productId) throws BalanceNotZeroException {
+        // Cancels the product with the given ID if its balance is zero, and returns a confirmation message.
+        String message = productService.cancelProduct(productId);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     @PostMapping("/transaction/{productId}")
-    public ResponseEntity<Void> performTransaction(@PathVariable Long productId, @RequestBody TransactionRequestDTO  transactionRequestDTO) {
-        productService.performTransaction(productId, transactionRequestDTO.getAmount());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> performTransaction(@PathVariable Long productId, @RequestBody TransactionRequestDTO transactionRequestDTO) {
+        // Performs a transaction on the specified product and returns a message with the new balance.
+        String message = productService.performTransaction(productId, transactionRequestDTO.getAmount());
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
-
 }

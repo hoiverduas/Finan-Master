@@ -24,20 +24,24 @@ public class TransactionController {
 
     @PostMapping("/deposit")
     public ResponseEntity<String> deposit(@RequestBody TransactionRequestDTO transactionRequestDTO) {
+        // Deposit money into the specified account and return a confirmation message.
         String message = transactionService.deposit(transactionRequestDTO.getAccountId(), transactionRequestDTO.getAmount());
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/withdraw")
     public ResponseEntity<String> withdraw(@RequestBody WithdrawRequestDTO withdrawRequestDTO) throws InsufficientFundsException {
+        // Withdraw money from the specified account and return a confirmation message.
+        // Throws InsufficientFundsException if the account has insufficient funds.
         String message = transactionService.withdraw(withdrawRequestDTO.getAccountId(), withdrawRequestDTO.getAmount());
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@RequestBody TransferRequestDTO transferRequestDTO) throws InsufficientFundsException {
+        // Transfer money between accounts and return a confirmation message.
+        // Throws InsufficientFundsException if the source account has insufficient funds.
         String message = transactionService.transfer(transferRequestDTO.getSourceAccountId(), transferRequestDTO.getTargetAccountId(), transferRequestDTO.getAmount());
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
-

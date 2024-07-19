@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public interface IProductService {
 
     ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) throws BalanceCannotBeZeroException;
-    void cancelProduct(Long productId) throws BalanceNotZeroException;
-    void performTransaction(Long productId, BigDecimal transactionAmount);
+    String cancelProduct(Long productId) throws BalanceNotZeroException;
+    String performTransaction(Long productId, BigDecimal transactionAmount);
 }
 

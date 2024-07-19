@@ -19,10 +19,8 @@ import java.util.List;
 @Service
 public class ClientService implements IClientService {
 
-
     private final IClientRepository clientRepository;
-
-    private  final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public ClientService(IClientRepository clientRepository, ObjectMapper objectMapper) {
@@ -30,33 +28,42 @@ public class ClientService implements IClientService {
         this.objectMapper = objectMapper;
     }
 
-    private final String MESSAGE ="Client not found.";
+    private final String MESSAGE = "Client not found.";
 
-
+    /**
+     * Creates a new client and saves it to the repository.
+     * Throws NotClientAgeException if the client is a minor.
+     */
     @Override
     public ClientResponseDTO createClient(ClientRequestDTO clientRequestDTO) throws NotClientAgeException {
-
         if (isUnderage(clientRequestDTO.getBirthDate())) {
             throw new NotClientAgeException("The client cannot be a minor.");
         }
 
-         Client client = mapToEntity(clientRequestDTO);
-         client.setCreationDate(LocalDate.now());
-         clientRepository.save(client);
+        Client client = mapToEntity(clientRequestDTO);
+        client.setCreationDate(LocalDate.now());
+        client.setModificationDate(null);
+        clientRepository.save(client);
         return mapToDto(client);
-
     }
 
+    /**
+     * Finds a client by their ID.
+     * Throws NotFoundException if the client is not found.
+     */
     @Override
     public ClientResponseDTO findById(Long id) {
-         Client client = clientRepository.findById(id).orElseThrow(
-                 () -> new NotFoundException(MESSAGE) );
+        Client client = clientRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(MESSAGE));
         return mapToDto(client);
     }
 
+    /**
+     * Updates an existing client.
+     * Sets the modification date to the current date.
+     */
     @Override
     public ClientResponseDTO update(ClientRequestUpdateDTO clientRequestUpdateDTO) {
-
         findById(clientRequestUpdateDTO.getId());
         Client client = mapToEntity(clientRequestUpdateDTO);
         client.setModificationDate(LocalDate.now());
@@ -64,12 +71,20 @@ public class ClientService implements IClientService {
         return mapToDto(client);
     }
 
+    /**
+     * Deletes a client by their ID.
+     * Throws NotFoundException if the client is not found.
+     */
     @Override
-    public void deleteById(Long id) {
+    public String deleteById(Long id) {
         findById(id);
         clientRepository.deleteById(id);
+        return "Client with ID: " + id + " has been deleted.";
     }
 
+    /**
+     * Retrieves all clients from the repository.
+     */
     @Override
     public List<ClientResponseDTO> findAll() {
         return clientRepository.findAll().stream()
@@ -77,21 +92,31 @@ public class ClientService implements IClientService {
                 .toList();
     }
 
-
+    /**
+     * Checks if the client is underage based on their birth date.
+     */
     private boolean isUnderage(LocalDate birthDate) {
         return Period.between(birthDate, LocalDate.now()).getYears() < 18;
     }
 
-
-    private ClientResponseDTO mapToDto(Client client){
-        return objectMapper.convertValue(client,ClientResponseDTO.class);
+    /**
+     * Maps a Client entity to a ClientResponseDTO using ObjectMapper.
+     */
+    private ClientResponseDTO mapToDto(Client client) {
+        return objectMapper.convertValue(client, ClientResponseDTO.class);
     }
 
-    private  Client mapToEntity(ClientRequestDTO clientRequestDTO){
-        return objectMapper.convertValue(clientRequestDTO,Client.class);
+    /**
+     * Maps a ClientRequestDTO to a Client entity using ObjectMapper.
+     */
+    private Client mapToEntity(ClientRequestDTO clientRequestDTO) {
+        return objectMapper.convertValue(clientRequestDTO, Client.class);
     }
 
-    private  Client mapToEntity(ClientRequestUpdateDTO clientRequestUpdateDTO){
-        return objectMapper.convertValue(clientRequestUpdateDTO,Client.class);
+    /**
+     * Maps a ClientRequestUpdateDTO to a Client entity using ObjectMapper.
+     */
+    private Client mapToEntity(ClientRequestUpdateDTO clientRequestUpdateDTO) {
+        return objectMapper.convertValue(clientRequestUpdateDTO, Client.class);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+
 @Service
 public class TransactionService implements ITransactionService {
 
@@ -26,6 +27,10 @@ public class TransactionService implements ITransactionService {
         this.transactionRepository = transactionRepository;
     }
 
+    /**
+     * Deposits a specified amount into an account.
+     * Returns a confirmation message upon successful deposit.
+     */
     @Override
     public String deposit(Long accountId, BigDecimal amount) {
         Product account = productRepository.findById(accountId)
@@ -45,6 +50,11 @@ public class TransactionService implements ITransactionService {
         return "A deposit of: " + amount + " has been made to your account.";
     }
 
+    /**
+     * Withdraws a specified amount from an account.
+     * Returns a confirmation message upon successful withdrawal.
+     * Throws InsufficientFundsException if the account balance is insufficient.
+     */
     @Override
     public String withdraw(Long accountId, BigDecimal amount) throws InsufficientFundsException {
         Product account = productRepository.findById(accountId)
@@ -68,6 +78,11 @@ public class TransactionService implements ITransactionService {
         return "A withdrawal of: " + amount + " has been made from your account.";
     }
 
+    /**
+     * Transfers a specified amount from one account to another.
+     * Returns a confirmation message upon successful transfer.
+     * Throws InsufficientFundsException if the source account balance is insufficient.
+     */
     @Override
     public String transfer(Long sourceAccountId, Long targetAccountId, BigDecimal amount) throws InsufficientFundsException {
         Product sourceAccount = productRepository.findById(sourceAccountId)
@@ -86,7 +101,7 @@ public class TransactionService implements ITransactionService {
         productRepository.save(sourceAccount);
         productRepository.save(targetAccount);
 
-        // Registro de la transacción que incluye tanto el débito como el crédito
+        // Registering the transaction including both debit and credit
         Transaction transaction = new Transaction();
         transaction.setType(TransactionType.TRANSFERENCIA);
         transaction.setAmount(amount);

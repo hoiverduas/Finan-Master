@@ -12,7 +12,7 @@ public interface IClientService {
     ClientResponseDTO createClient(ClientRequestDTO clientRequestDTO) throws NotClientAgeException;
     ClientResponseDTO findById(Long id);
     ClientResponseDTO update(ClientRequestUpdateDTO clientRequestUpdateDTO);
-    void deleteById(Long id);
+    String deleteById(Long id);
     List<ClientResponseDTO> findAll();
 
 

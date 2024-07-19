@@ -24,9 +24,7 @@ import java.util.Random;
 public class ProductService implements IProductService {
 
     private final IProductRepository productRepository;
-
     private final IClientRepository clientRepository;
-
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -39,15 +37,17 @@ public class ProductService implements IProductService {
     private final String MESSAGE = "Client not found";
     private final String MESSAGE_BALANCE = "Savings account balance cannot be less than 0";
 
-
+    /**
+     * Creates a new product (e.g., bank account) and saves it to the repository.
+     * Throws BalanceCannotBeZeroException if the balance is less than 0 for savings accounts.
+     */
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) throws BalanceCannotBeZeroException {
-
         Client client = clientRepository.findById(productRequestDTO.getClientId()).orElseThrow(
-                ()-> new NotFoundException(MESSAGE));
+                () -> new NotFoundException(MESSAGE));
 
-        if (productRequestDTO.getType() == ProductType.SAVINGS_ACCOUNT && productRequestDTO.getBalance().compareTo(BigDecimal.ZERO) < 0 ){
-              throw new BalanceCannotBeZeroException(MESSAGE_BALANCE);
+        if (productRequestDTO.getType() == ProductType.SAVINGS_ACCOUNT && productRequestDTO.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BalanceCannotBeZeroException(MESSAGE_BALANCE);
         }
 
         String accountNumber = generateUniqueAccountNumber(productRequestDTO.getType());
@@ -56,20 +56,22 @@ public class ProductService implements IProductService {
         product.setAccountNumber(accountNumber);
         product.setCreationDate(LocalDate.now());
         product.setClient(client);
-        product.setModificationDate(LocalDate.now());
+        product.setModificationDate(null);
         product.setStatus(AccountStatus.ACTIVE);
-
 
         productRepository.save(product);
 
         return mapToDto(product);
     }
 
+    /**
+     * Cancels a product by setting its status to CANCELED.
+     * Throws BalanceNotZeroException if the product's balance is not zero.
+     */
     @Override
-    public void cancelProduct(Long productId) throws BalanceNotZeroException {
-
+    public String cancelProduct(Long productId) throws BalanceNotZeroException {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found with ID: "));
+                .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
 
         if (product.getBalance().compareTo(BigDecimal.ZERO) != 0) {
             throw new BalanceNotZeroException("Only products with a balance of $0 can be canceled.");
@@ -79,10 +81,15 @@ public class ProductService implements IProductService {
         product.setModificationDate(LocalDate.now());
 
         productRepository.save(product);
+
+        return "Product with ID: " + productId + " has been canceled.";
     }
 
+    /**
+     * Performs a transaction on a product, updating its balance.
+     */
     @Override
-    public void performTransaction(Long productId, BigDecimal transactionAmount) {
+    public String performTransaction(Long productId, BigDecimal transactionAmount) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product not found with ID: " + productId));
 
@@ -90,9 +97,13 @@ public class ProductService implements IProductService {
         product.setBalance(newBalance);
 
         productRepository.save(product);
+
+        return "Transaction of amount: " + transactionAmount + " has been performed on product with ID: " + productId + ". New balance is: " + newBalance;
     }
 
-
+    /**
+     * Generates a unique account number for a product.
+     */
     private String generateUniqueAccountNumber(ProductType type) {
         String prefix = type == ProductType.SAVINGS_ACCOUNT ? "53" : "33";
         String accountNumber;
@@ -102,12 +113,18 @@ public class ProductService implements IProductService {
         return accountNumber;
     }
 
-    private ProductResponseDTO mapToDto(Product product){
-        return objectMapper.convertValue(product,ProductResponseDTO.class);
+    /**
+     * Maps a Product entity to a ProductResponseDTO using ObjectMapper.
+     */
+    private ProductResponseDTO mapToDto(Product product) {
+        return objectMapper.convertValue(product, ProductResponseDTO.class);
     }
 
-    private  Product mapToEntity(ProductRequestDTO productRequestDTO){
-        return objectMapper.convertValue(productRequestDTO,Product.class);
+    /**
+     * Maps a ProductRequestDTO to a Product entity using ObjectMapper.
+     */
+    private Product mapToEntity(ProductRequestDTO productRequestDTO) {
+        return objectMapper.convertValue(productRequestDTO, Product.class);
     }
 
 }
